@@ -13,7 +13,16 @@
 
 **Claude.ai / приложение Claude:** скачайте готовый архив из [`dist/`](dist/) (например, `modern-cpp-style.skill`) и загрузите его в разделе навыков (Skills) в настройках Claude.
 
-**Claude Code:** скопируйте папку навыка в `~/.claude/skills/` (для всех проектов) или в `.claude/skills/` конкретного проекта:
+**Claude Code (плагин, с автообновлением):**
+
+```bash
+claude plugin marketplace add https://github.com/AlexKilim/ai-skills.git
+claude plugin install alexkilim-skills@alexkilim-skills
+```
+
+Затем включите автообновление в `/plugin` → Marketplaces. Для приватного репозитория задайте `GITHUB_TOKEN`.
+
+**Claude Code (вручную):** скопируйте папку навыка в `~/.claude/skills/` (для всех проектов) или в `.claude/skills/` конкретного проекта:
 
 ```bash
 git clone https://github.com/AlexKilim/ai-skills.git

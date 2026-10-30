@@ -1,0 +1,16 @@
+{
+  "name": "alexkilim-skills",
+  "owner": {
+    "name": "Alex Kilim"
+  },
+  "description": "Личные навыки Alex Kilim для Claude Code.",
+  "plugins": [
+    {
+      "name": "alexkilim-skills",
+      "source": "./",
+      "strict": false,
+      "description": "Навыки: file-edit (безопасная правка файлов) и modern-cpp-style (стиль Modern C++).",
+      "skills": ["./file-edit", "./modern-cpp-style"]
+    }
+  ]
+}
