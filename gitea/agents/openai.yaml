@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gitea"
+  short_description: "Настройка трекера Gitea и работа с задачами"
+  default_prompt: "Используй $gitea для работы с задачами текущего проекта."

@@ -9,8 +9,8 @@
       "name": "alexkilim-skills",
       "source": "./",
       "strict": false,
-      "description": "Навыки: file-edit (безопасная правка файлов) и modern-cpp-style (стиль Modern C++).",
-      "skills": ["./file-edit", "./modern-cpp-style"]
+      "description": "Навыки: file-edit (безопасная правка файлов), modern-cpp-style (стиль Modern C++) и gitea (трекер задач).",
+      "skills": ["./file-edit", "./modern-cpp-style", "./gitea"]
     }
   ]
 }
