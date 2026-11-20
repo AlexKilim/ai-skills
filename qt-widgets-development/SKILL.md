@@ -7,6 +7,10 @@ For a Qt Widgets project, inspect the existing theme and component usage. Consul
 
 Choose colors by role. Give each color-coded state a visible cue that distinguishes it, such as a label, a different shape, or a slash across a blocked antenna. Supplement the visible cue with an accessible name or description for assistive technology. Use the existing gallery artwork for issue severity, recording, connectivity, antenna, satellites and Ethernet. Keep protocol decoding, thresholds and device-specific state descriptions in the consuming application. Red Tx and green Rx describe radio direction; select severity separately.
 
+Add a short tooltip to icon-only buttons and controls whose purpose is unclear. Make essential information available without hover, for example through a visible label or keyboard-accessible help.
+
+For mutually exclusive actions on the same process, prefer one button when the next action is clear. For example, change Start to Stop after startup is confirmed. Show a pending state while the command is in progress. Keep separate controls when both actions need to be available independently.
+
 For live measurements, distinguish zero, missing, stale and last measured values. Derive the freshness limit from the relevant data stream; unrelated traffic cannot refresh it. Keep command acceptance distinct from confirmation by fresh equipment state. On reconnect, clear pending actions and activity baselines. Verify the states relevant to the change, including loss and recovery of data, using an offscreen interaction test where practical.
 
 Use the existing project's preferences when extending a screen. A candidate for changing the shared library or these instructions goes through user confirmation before editing or publication.
