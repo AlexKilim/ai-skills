@@ -15,4 +15,4 @@ Consult the [preferred skills list](references/preferred-skills.md) when selecti
 
 Keep adoption for the current task separate from a change to shared defaults. Batch concrete proposals with their destination, wording or component change, and reason. Ask for confirmation before editing skills, the preferred list, or shared libraries, and offer GitHub publication in the same question. Continue independent project work while awaiting a decision.
 
-Apply the approved items to their maintained source. Verify the original case, a nearby case outside the rule, and the installed copy. Publish when authorized and verify the remote revision. If changes remain local, say so and offer publication. One confirmation can cover both the edit and the push.
+Apply the approved items to their maintained source. Verify the original case, a nearby case outside the rule, and the installed copy. Publish when authorized and verify the remote revision. Offer publication once per batch. When the user chooses local-only, report the local result and respect that choice until the user reopens it. One confirmation can cover both the edit and the push.

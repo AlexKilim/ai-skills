@@ -35,11 +35,16 @@ Use the installed schema for repository-setting edits and less common features. 
 Invoke-RestMethod can emit an API array as a single pipeline object. Capture the response first, then enumerate it. Otherwise a Where-Object filter can accidentally select an entire collection and yield multiple label IDs where one was expected.
 
 ```powershell
-$response = Invoke-RestMethod -Uri ($repoApi + '/labels?page=1&limit=50') -Headers $headers
-$labels = @($response | ForEach-Object { $_ })
-$matches = @($labels | Where-Object { $_.name -ceq $configuredLabelName })
-if ($matches.Count -ne 1) { throw 'Expected exactly one configured label' }
-$labelId = [long]$matches[0].id
+$labelIds = @(for ($page = 1; ; $page++) {
+    $response = Invoke-RestMethod -Uri ("{0}/labels?page={1}&limit=50" -f $repoApi, $page) -Headers $headers -ErrorAction Stop
+    if (@($response).Count -eq 0 -or $null -eq $response) { break }
+    foreach ($label in $response) {
+        if ($label.name -ceq $configuredLabelName) { [long]$label.id }
+    }
+})
+if ($labelIds.Count -eq 0) { throw "Label not found: $configuredLabelName" }
+if ($labelIds.Count -gt 1) { throw "Ambiguous label: $configuredLabelName" }
+$labelId = $labelIds[0]
 ```
 
 Paginate until the server indicates there is no next page. Prefer Link or total-count headers when available; otherwise continue until an empty page. A short page is not sufficient evidence if the server may clamp the requested limit.

@@ -32,7 +32,7 @@ Finish with the full corrected version of the code when it is short enough to be
 ## 2. Variables, initialization, types
 
 **Initialization**
-- Use brace (direct-list) initialization `{}` for all variables and class members — it rejects narrowing conversions at compile time.
+- Prefer brace initialization to catch narrowing conversions. Use parentheses when the constructor overload matters. For example, `std::vector<int> values(10)` creates ten elements while `std::vector<int> values{10}` creates one element with value 10.
 - Value-initialize fundamental and trivial types with empty braces: `int count{}`, `double ratio{}`. For a later explicit reset to zero, plain assignment is fine: `count = 0;`.
 - For other POD/aggregate types, reset with empty `{}` instead of `{ 0 }` or `= 0` (`{ 0 }` only zeroes the first member explicitly and reads as if that were intended).
 
@@ -86,7 +86,7 @@ Finish with the full corrected version of the code when it is short enough to be
 
 ## 5. Classes, resources, memory
 
-- **RAII.** No owning raw pointers, no manual `new`/`delete`. Use `std::unique_ptr` (default) or `std::shared_ptr` (only for real shared ownership), created with `std::make_unique` / `std::make_shared`. Non-owning raw pointers/references are fine.
+- **RAII.** Give every resource one ownership model. A Qt parent owns its child QObjects, so a child created with `new QLabel(parent)` can be observed through a raw pointer. Keep a single owner throughout its lifetime. For resources owned by ordinary C++ code, avoid manual `new`/`delete`. Use `std::unique_ptr` (default) or `std::shared_ptr` (only for real shared ownership), created with `std::make_unique` / `std::make_shared`. Non-owning raw pointers/references are fine.
 - **Parameter passing.** Heavy objects by `const T&`; `std::string_view` / `std::span` for read-only views; by value + `std::move` when the function takes ownership (sink parameters). Use `std::move` to transfer ownership; don't `std::move` a `const` object or a returned local (it blocks NRVO).
 - **`explicit` constructors.** Every constructor callable with a single argument (including ones with defaulted extra parameters) is `explicit`, to prevent implicit conversions.
 - **Initialization of members.** Default member initializers in the class body for defaults (`int id_{};`), member initializer lists in constructors for values passed in — never assignment in the constructor body.
@@ -95,7 +95,7 @@ Finish with the full corrected version of the code when it is short enough to be
 ## Self-check before answering
 
 Before sending generated code, scan it once against this list:
-- brace init everywhere; empty `{}` for zero values
+- initialization selects the intended constructor and value
 - `const` locals/methods; no `const` on by-value params
 - names: PascalCase types, snake_case functions/vars, trailing `_` on private members/helpers, no leading `_`
 - `enum class` (+ `operator+` if used as integer)
@@ -104,4 +104,4 @@ Before sending generated code, scan it once against this list:
 - all comments in English
 - every required `#include` present (don't rely on transitive includes, e.g. `<string>`)
 
-If you have a shell with a compiler, compile non-trivial generated code (`g++ -std=c++20 -Wall -Wextra -Wpedantic -fsyntax-only`) before presenting it.
+Build nontrivial changes through the project's configured target. For a standalone snippet, check with the compiler and C++ standard intended for its consumer. Select library features and examples supported by that standard.
