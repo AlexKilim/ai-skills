@@ -7,13 +7,15 @@ description: House style for writing and reviewing Modern C++ (C++17/20/23) — 
 
 You are acting as an expert in Modern C++ (C++17/20/23) and clean code. Generate reliable, safe, high-performance code and review code against the rules below. The rules exist to make code safer (fewer implicit conversions, no UB from narrowing or signed/unsigned mixing), cheaper (no needless allocations), and uniform enough that a reader never wonders which convention a file follows.
 
-A complete, compiling example of the style is in `references/reference_example.cpp`. Read it the first time you use this skill in a conversation if you need a concrete anchor.
+See [the C++17 reference example](references/reference_example.cpp) when you need a working style example.
 
 ## 1. General rules and code review
 
+- **Target standard.** Check the standard of the target you are changing and use language and library features it supports. For standalone examples, use the intended consumer's standard.
+- **Scope.** Start with the existing interface and add an abstraction when the task needs it. Preserve caller contracts outside the requested change. Include adjacent cleanup when the task requires it or your edit created the issue.
 - **Language.** Code is C++. Every code comment and every explanation of a defect inside code must be in **English**, regardless of the conversation language. Prose outside code blocks follows the user's language.
 - **Concrete fixes, not just findings.** Whenever you point out a defect (missing comment, possible UB, missing `const`, wrong naming, raw loop…), immediately give the corrected code fragment or the exact text of the missing comment. A finding without a fix is incomplete.
-- **Use modern features and idioms** where they genuinely help: `std::string_view`, `std::optional`, `auto`, `constexpr`, `enum class`, RAII, `static_assert`, `std::span`, ranges.
+- **Use modern features and idioms** where they genuinely help: `std::string_view`, `std::optional`, `auto`, `constexpr`, `enum class`, RAII, `static_assert`, `std::span` and ranges (C++20).
 
 ### Review output format
 When reviewing, group findings by severity, and for each finding give: location → problem (one line, English) → fixed code.
@@ -22,7 +24,9 @@ When reviewing, group findings by severity, and for each finding give: location 
 ### Critical (UB / leaks / correctness)
 1. `parse()` line 12 — `buf.size() - 1` underflows when `buf` is empty.
    ```cpp
-   for (int i{}; i < std::ssize(buf) - 1; ++i) { ... }
+   for (decltype(buf.size()) i{1}; i < buf.size(); ++i) {
+       compare(buf[i - 1], buf[i]);
+   }
    ```
 ### Style
 ...
@@ -39,10 +43,12 @@ Finish with the full corrected version of the code when it is short enough to be
 **const / constexpr**
 - `const` by default on local variables and on member functions that do not change observable state.
 - Do **not** add `const` to by-value function parameters (it is noise in the interface). Use `const` on reference and pointer parameters when it expresses that the referenced data is not modified.
-- Use `constexpr` (or `consteval` when it must be compile-time) for values and functions computable at compile time.
+- Use `constexpr` (or `consteval` in C++20 when every call must be evaluated at compile time) for values and functions computable at compile time.
 
 **static_assert**
 - Validate types, struct sizes, template parameters, and constant conditions at compile time, e.g. `static_assert(sizeof(Header) == 16, "Header must match the wire format.");`, `static_assert(std::is_trivially_copyable_v<T>);`.
+
+**Domain types.** Use a distinct type when callers can confuse quantities or identifiers with the same representation. Reuse a suitable type such as `std::chrono::milliseconds` before introducing a wrapper. When validity is part of the type's contract, enforce it at construction or through a checked factory.
 
 **Numeric types**
 - Prefer plain signed `int` for arithmetic, counters, and indices. Don't reach for `std::ptrdiff_t`, `std::int32_t`, `ssize_t` without a concrete reason (wire formats, hardware registers, large sizes).
@@ -62,6 +68,7 @@ Finish with the full corrected version of the code when it is short enough to be
 | Private/protected data members | `snake_case_` | `sample_rate_rx_`, `id_` |
 | Private/protected helper methods | `snake_case_()` | `log_error_()`, `calculate_internal_()` |
 
+- Use domain terms and name functions after observable effects. Comments explain constraints, rationale, or non-obvious invariants.
 - **Never use leading underscores** (`_var`, `__var`). Names with a double underscore anywhere, or starting with an underscore followed by an uppercase letter, are reserved by ISO C++ for the implementation. A trailing underscore is collision-free.
 - **Scoped enums only.** Always `enum class`, never C-style `enum`.
 - **Unary `operator+` for enums used as integers.** If an `enum class` is used as an array index, bit flag, counter, or passed to system APIs, provide:
@@ -82,12 +89,16 @@ Finish with the full corrected version of the code when it is short enough to be
 
 - Prefer `<algorithm>` / `<numeric>` (`std::all_of`, `std::find_if`, `std::transform`, `std::accumulate`) or C++20 ranges (`std::ranges::any_of`, views) over raw `for`/`while` loops where they express intent more clearly.
 - When a loop is genuinely clearer (multiple outputs, early exits with side effects), use range-based `for (const auto& item : collection)`. Don't contort code into an algorithm just to avoid a loop.
-- Never use C-style casts `(type)val`. Use `static_cast`, `const_cast`, `reinterpret_cast` (and `std::bit_cast` for type punning) so each conversion's intent is visible and greppable.
+- Never use C-style casts `(type)val`. Use `static_cast`, `const_cast`, `reinterpret_cast` (and `std::bit_cast` in C++20 for type punning) so each conversion's intent is visible and greppable.
 
-## 5. Classes, resources, memory
+## 5. Interfaces, resources, and errors
 
 - **RAII.** Give every resource one ownership model. A Qt parent owns its child QObjects, so a child created with `new QLabel(parent)` can be observed through a raw pointer. Keep a single owner throughout its lifetime. For resources owned by ordinary C++ code, avoid manual `new`/`delete`. Use `std::unique_ptr` (default) or `std::shared_ptr` (only for real shared ownership), created with `std::make_unique` / `std::make_shared`. Non-owning raw pointers/references are fine.
-- **Parameter passing.** Heavy objects by `const T&`; `std::string_view` / `std::span` for read-only views; by value + `std::move` when the function takes ownership (sink parameters). Use `std::move` to transfer ownership; don't `std::move` a `const` object or a returned local (it blocks NRVO).
+- **Rule of zero.** Prefer resource-owning members that already implement the required ownership semantics. Let the compiler generate destruction, copy, and move when member behavior matches the class contract.
+- **Parameter passing.** Heavy objects by `const T&`; `std::string_view` / `std::span` (C++20) for read-only views; by value + `std::move` when the function takes ownership (sink parameters). Use `std::move` to transfer ownership; don't `std::move` a `const` object or a returned local (it blocks NRVO).
+- **Results and modes.** In new interfaces, prefer returning values, including named result structs for multiple outputs. Use caller-provided buffers when required by an existing ABI or documented allocation or latency constraints. Express mode-selecting flags with a named type or separate operations when the call would otherwise be ambiguous.
+- **Failure guarantees.** Follow the project's error model. Preserve invariants on failure and define what state the caller can observe. When the contract requires an all-or-nothing update, prepare and validate the new state before committing it.
+- **Side effects.** When separating a calculation makes it easier to test, pass its inputs explicitly. For a timeout calculation, the caller can read the clock and pass the current time.
 - **`explicit` constructors.** Every constructor callable with a single argument (including ones with defaulted extra parameters) is `explicit`, to prevent implicit conversions.
 - **Initialization of members.** Default member initializers in the class body for defaults (`int id_{};`), member initializer lists in constructors for values passed in — never assignment in the constructor body.
 - Mark getters and pure functions `[[nodiscard]]` and `noexcept` where appropriate.
@@ -104,4 +115,4 @@ Before sending generated code, scan it once against this list:
 - all comments in English
 - every required `#include` present (don't rely on transitive includes, e.g. `<string>`)
 
-Build nontrivial changes through the project's configured target. For a standalone snippet, check with the compiler and C++ standard intended for its consumer. Select library features and examples supported by that standard.
+Build nontrivial changes through the project's configured target. Check a standalone snippet with its intended compiler and standard.

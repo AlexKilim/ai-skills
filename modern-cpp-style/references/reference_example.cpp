@@ -1,5 +1,5 @@
 // Reference example: the house style this skill enforces.
-// Compiles with: g++ -std=c++20 -Wall -Wextra -Wpedantic
+// Compiles with: g++ -std=c++17 -Wall -Wextra -Wpedantic
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -37,7 +37,7 @@ public:
 
     void process_scores(const std::vector<int>& raw_scores) const {
         // STL algorithm instead of a raw loop
-        const bool has_negative{ std::ranges::any_of(raw_scores, [](int score) { return score < 0; }) };
+        const bool has_negative{ std::any_of(raw_scores.cbegin(), raw_scores.cend(), [](int score) { return score < 0; }) };
         if (has_negative) {
             log_error_("Negative score detected in batch.");
         }
