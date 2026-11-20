@@ -9,6 +9,7 @@
 | [modern-cpp-style](modern-cpp-style/SKILL.md) | Генерация и ревью кода на Modern C++ (C++17/20/23): `{}`-инициализация, `const`/`constexpr` по умолчанию, `static_assert`, `enum class` с унарным `operator+`, snake_case для функций, `_` в конце имён приватных членов, STL-алгоритмы и ranges вместо сырых циклов, RAII, `explicit`-конструкторы. |
 | [file-edit](file-edit/SKILL.md) | Безопасная правка файлов пользователя, особенно на подключённом компьютере через stage/commit: свежая копия перед каждой правкой, побайтовые замены с сохранением кодировки (CP1251) и CRLF, коммит из уникального пути, обязательная проверка записи перед отчётом. |
 | [gitea](gitea/SKILL.md) | Настройка трекера Gitea для разных проектов: публикация спецификаций, чтение и обновление задач, метки triage, авторизация через сохранённые учётные данные Git или токен и проверка результата операций API. |
+| [gui-development](gui-development/SKILL.md) | Компактный интерфейс, подсказки и кнопки для взаимоисключающих действий. |
 | [qt-widgets-development](qt-widgets-development/SKILL.md) | Применение общих виджетов, палитры и значков в Qt 6 Widgets. |
 | [skill-maintenance](skill-maintenance/SKILL.md) | Предложения по улучшению навыков и общей библиотеки по результатам разработки, с подтверждением перед изменением. |
 
@@ -33,6 +34,8 @@ claude plugin install alexkilim-skills@alexkilim-skills
 git clone https://github.com/AlexKilim/ai-skills.git
 cp -r ai-skills/modern-cpp-style ~/.claude/skills/
 ```
+
+При установке `qt-widgets-development` из архива или вручную установите также `gui-development`.
 
 ## Структура
 
