@@ -10,7 +10,7 @@
       "source": "./",
       "strict": false,
       "description": "Навыки: file-edit (безопасная правка файлов), modern-cpp-style (стиль Modern C++) и gitea (трекер задач).",
-      "skills": ["./file-edit", "./modern-cpp-style", "./gitea"]
+      "skills": ["./file-edit", "./modern-cpp-style", "./gitea", "./qt-widgets-development", "./skill-maintenance"]
     }
   ]
 }
