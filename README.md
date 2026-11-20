@@ -12,6 +12,8 @@
 | [qt-widgets-development](qt-widgets-development/SKILL.md) | Применение общих виджетов, палитры и значков в Qt 6 Widgets. |
 | [skill-maintenance](skill-maintenance/SKILL.md) | Предложения по улучшению навыков и общей библиотеки по результатам разработки, с подтверждением перед изменением. |
 
+[Предпочитаемые скиллы по задачам](skill-maintenance/references/preferred-skills.md)
+
 ## Установка
 
 **Claude.ai / приложение Claude:** скачайте готовый архив из [`dist/`](dist/) (например, `modern-cpp-style.skill`) и загрузите его в разделе навыков (Skills) в настройках Claude.
